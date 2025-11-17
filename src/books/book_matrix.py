@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 from scipy.sparse import coo_matrix, csr_matrix
+from typing import Optional, Self, Tuple
 
 
 @dataclass
@@ -15,7 +16,7 @@ class MatrixSplit:
 
 
 class S21UserBookMatrixBuilder:
-    def __init__(self, ratings_path, users_path) -> None:
+    def __init__(self, ratings_path: str, users_path: str) -> None:
         ratings = pd.read_csv(ratings_path)
         ratings = ratings.dropna(subset=["User-ID", "ISBN", "Book-Rating"])
 
@@ -23,6 +24,7 @@ class S21UserBookMatrixBuilder:
 
         self.ratings = ratings[ratings["Book-Rating"] > 0].copy()
         self.users = users.set_index("User-ID")
+
 
     # filter top-n books to reduce the number of total calculations
     def _filter_top_books(self, top_n_books: int | None) -> None:
@@ -39,7 +41,7 @@ class S21UserBookMatrixBuilder:
 
 
     # converts ratings to CSR sparse matrix
-    def _build_sparse_matrix(self) -> "S21UserBookMatrixBuilder":
+    def _build_sparse_matrix(self) -> Self:
         ratings = self.ratings
         user_codes = ratings["User-ID"].astype("category")
         book_codes = ratings["ISBN"].astype("category")
@@ -63,8 +65,8 @@ class S21UserBookMatrixBuilder:
         return self
 
 
-    # splits data to train/val/test (by interactions)
-    def _split_matrix(self, train_ratio, val_ratio, test_ratio, seed) -> "S21UserBookMatrixBuilder":
+    # splits data to train/val/test (by interactions) 
+    def _split_matrix(self, train_ratio: float, val_ratio: float, test_ratio: float, seed: Optional[int]) -> Self:
         self._build_sparse_matrix()
         matrix = self.matrix
 
@@ -106,11 +108,11 @@ class S21UserBookMatrixBuilder:
     # builds MatrixSplit
     def build_split(
         self,
-        ratios,
-        seed=None,
+        ratios: Tuple[float, float, float],
+        seed: Optional[int] = None,
         *,
-        min_age: float = 5,
-        max_age: float = 100,
+        min_age: float = 5.0,
+        max_age: float = 100.0,
         top_n_books: int | None = None,
     ) -> MatrixSplit:
         if len(ratios) != 3 or any(r < 0 for r in ratios):
