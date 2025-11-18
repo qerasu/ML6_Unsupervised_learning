@@ -85,7 +85,7 @@ class S21MnistOperations:
 
     # TSNE
     def transform_tsne(self) -> np.ndarray:
-        X_small = self._get_images()[:5000]
+        self.X_small = self._get_images()[:5000]
         tsne = TSNE(
             n_components=2,
             perplexity=30,
@@ -94,7 +94,7 @@ class S21MnistOperations:
             random_state=42
         )
 
-        return tsne.fit_transform(X_small)
+        return tsne.fit_transform(self.X_small)
 
     
     # UMAP
@@ -114,4 +114,4 @@ class S21MnistOperations:
             random_state=42
         )
 
-        return lle.fit_transform(self._get_images())
+        return lle.fit_transform(self.X_small)
