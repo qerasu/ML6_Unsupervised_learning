@@ -130,7 +130,7 @@ class S21AgePipelineManager:
         return self
 
 
-    # searchs for ridge hyperparamethers usirng _forest_pipeline
+    # searches for ridge hyperparamethers usirng _forest_pipeline
     def fit_forest(self, X: csr_matrix, y: np.ndarray, reduce: Optional[str] = None) -> Self:
         params = {
             "model__n_estimators": [200],

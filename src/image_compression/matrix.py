@@ -1,8 +1,6 @@
-from typing import List, Tuple
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.decomposition import TruncatedSVD
 
 
 class S21Images:

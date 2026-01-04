@@ -44,4 +44,4 @@ if __name__ == "__main__":
     MODEL_FILE = "pca_model.pkl"
     IDX = 0
     z = main(MNIST_FILE, MODEL_FILE, IDX)
-    print("LOADED:", z)
+    print("LOADED:", z) # output must be the same as in the .ipynb

@@ -8,8 +8,6 @@ from sklearn.manifold import TSNE, LocallyLinearEmbedding
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, f1_score, silhouette_score
 from typing import Optional, Tuple
-import pickle
-from pathlib import Path
 
 
 class S21MnistOperations:
@@ -19,6 +17,7 @@ class S21MnistOperations:
         self.images: Optional[np.ndarray] = None
         self.labels: Optional[np.ndarray] = None
         self.X_small: Optional[np.ndarray] = None
+        self.pca_model = None
 
 
     # loads MNIST images from .gz and returns a matrix

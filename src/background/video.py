@@ -12,6 +12,7 @@ class Video:
         self.U = None
         self.s = None
         self.Vt = None
+        self.to_matrix_called = False
 
 
     def first_frame_raw(self) -> np.ndarray:
@@ -43,19 +44,31 @@ class Video:
 
         cap.release()
 
+        if not self.frames:
+            raise RuntimeError(f"No frames read from: {self.path}")
+
         self.frame_shape = tuple(self.frames[0].shape)
         self.X = self.U = self.s = self.Vt = None
+        self.to_matrix_called = False
 
         return self
 
 
     def to_matrix(self) -> np.ndarray:
+        if not self.frames:
+            raise RuntimeError("Call read() before calling to_matrix()")
+            
         # X shape: (pixels, frames)
         self.X = np.stack([f.reshape(-1) for f in self.frames], axis=1).astype(np.float32, copy=False)
+        self.to_matrix_called = True
+
         return self.X
 
 
     def compute_svd(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        if self.to_matrix_called is False:
+            raise RuntimeError("Call to_matrix() before calling compute_svd()")
+
         # full SVD
         U, s, Vt = np.linalg.svd(self.X, full_matrices=False)
         self.U, self.s, self.Vt = U, s, Vt
@@ -64,6 +77,9 @@ class Video:
 
 
     def reconstruct_first_frame(self, *, rank: int = 1, clip: bool = True) -> np.ndarray:
+        if self.U is None or self.s is None or self.Vt is None:
+            raise RuntimeError("Call compute_svd() before calling reconstruct_first_frame()")
+        
         r = max(1, int(rank))
 
         U_r = self.U[:, :r]
